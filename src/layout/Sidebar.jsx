@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-// Replace this with your actual CRM logo path if necessary!
-//import companyLogo from "../assets/Company_logo.png";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-//import { useTheme } from "../../context/ThemeContext";
 import { Popover, Tooltip, Grid } from "antd";
 import { Megaphone, MessageSquare,BadgeIndianRupee } from "lucide-react";
-//import { MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 // Ant Design Icons
 import {
   DashboardOutlined,
@@ -38,20 +36,23 @@ import {
 
 const Sidebar = ({
   collapsed = true,
-  setCollapsed = () => { },
+  setCollapsed = () => {},
+  active,
+  setActive,
 }) => {
-  const { useBreakpoint } = Grid;
+    const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  
+const location = useLocation();
+const selectedKey = location.pathname.split("/")[1] || "dashboard";
   const theme = "light";
   const primaryColor = "#1C2244";
   const sidebarBgColor = "#ffffff";
   const [openMenu, setOpenMenu] = useState(null); // stores key of open inline menu OR open popover
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const containerRef = useRef(null);
-
   // Colors
   const ACTIVE_TEXT = "#ffffff";
   const INACTIVE_TEXT = theme === "dark" ? "#D1D5DB" : "#374151";
@@ -77,133 +78,77 @@ const Sidebar = ({
     return () => document.removeEventListener("mousedown", handleDocClick);
   }, [collapsed, isMobile]);
 
-  // Expand logic correctly matching the user's route structure
-  const selectedKey = pathname.replace("/", "") || "dashboard";
-
+ 
   // Menu configuration injected from user's code
-  const menuItems = [
-    {
-      key: "dashboard",
-      icon: <DashboardOutlined style={{ fontSize: 18 }} />,
-      label: "Dashboard",
-    },
-    // SALES GROUP
-    {
-      key: "sales",
-      icon: <RiseOutlined style={{ fontSize: 18 }} />,
-      label: "Sales",
-      children: [
-        {
-          key: "leads",
-          icon: <AppstoreOutlined style={{ fontSize: 18 }} />,
-          label: "Leads",
-        },
-        // {
-        //   key: "opportunities",
-        //   icon: <BadgeIndianRupee style={{ fontSize: 18 }} />,
-        //   label: "Opportunities",
-        // },
-        {
-          key: "quotes",
-          icon: <FileText size={18} />,
-          label: "Quotes",
-        },
-        {
-          key: "activities",
-          icon: <CalendarOutlined style={{ fontSize: 18 }} />,
-          label: "Activities",
-        },
-        {
-          key: "invoices",
-          icon: <BadgeIndianRupee style={{ fontSize: 16 }} />,
-          label: "Invoices",
-        },
-      ],
-    },
-    // CUSTOMER
-    {
-      key: "customer",
-      icon: <UserOutlined style={{ fontSize: 18 }} />,
-      label: "Customers",
-    },
-    {
-      key: "deals",
-      icon: <BadgeIndianRupee style={{ fontSize: 18 }} />,
-      label: "Deals",
-    },
-    // TASKS
-    // {
-    //   key: "tasks",
-    //   icon: <FileText size={18} />,
-    //   label: "Tasks",
-    // },
-    // REPORTS
-    {
-      key: "reports",
-      icon: <BarChartOutlined style={{ fontSize: 18 }} />,
-      label: "Reports",
-    },
-    // MARKETING GROUP
-    {
-      key: "marketing",
-      icon: <Megaphone size={18} />,
-      label: "Marketing",
-      children: [
-        {
-          key: "marketing-dashboard",
-          icon: <BarChartOutlined style={{ fontSize: 18 }} />,
-          label: "Overview",
-        },
-        {
-          key: "campaigns",
-          icon: <RiseOutlined style={{ fontSize: 18 }} />,
-          label: "Campaigns",
-        },
-        {
-          key: "whatsapp-campaign",
-          icon: <MessageSquare size={18} />,
-          label: "WhatsApp Campaign",
-        },
-      ],
-    },
-    // ADMINISTRATION GROUP
-    {
-      key: "admin",
-      icon: <DatabaseOutlined style={{ fontSize: 18 }} />,
-      label: "Administration",
-      children: [
-        {
-          key: "users",
-          icon: <UserOutlined style={{ fontSize: 18 }} />,
-          label: "Users",
-        },
-      ],
-    },
-    // SUPPORT & FINANCE GROUP
-    {
-      key: "support",
-      icon: <DatabaseOutlined style={{ fontSize: 18 }} />,
-      label: "Support & Finance",
-      children: [
-        {
-          key: "tickets",
-          icon: <FileText size={18} />,
-          label: "Tickets",
-        },
-        {
-          key: "payments",
-          icon: <BadgeIndianRupee style={{ fontSize: 18 }} />,
-          label: "Payments",
-        },
-        {
-          key: "notes",
-          icon: <FileText size={18} />,
-          label: "Notes",
-        },
-      ],
-    },
-  ];
+ const menuItems = [
+  {
+    key: "dashboard",
+    icon: <DashboardOutlined style={{ fontSize: 18 }} />,
+    label: "Dashboard",
+  },
+{
+    key: "support-ticket",
+    icon: <MessageSquare size={18} />,
+    label: "Support Ticket",
+  },
+  // 🎯 TICKET MODULE
+  {
+    key: "tickets",
+    icon: <FileText size={18} />,
+    label: "Tickets",
+    children: [
+      {
+        key: "tickets",
+        label: "All Tickets",
+        icon: <FileText size={16} />,
+      },
+      {
+        key: "my-tickets",
+        label: "My Tickets",
+        icon: <UserOutlined />,
+      },
+      {
+        key: "create-ticket",
+        label: "Create Ticket",
+        icon: <AppstoreOutlined />,
+      },
+     
+      
+    ],
+  },
+  // 👨‍💻 TEAM / USERS
+   {
+  key: "support-chat",
+  label: "Support Chat",
+  icon: <MessageSquare size={16} />,
+},
+  {
+    key: "users",
+    icon: <UserOutlined />,
+    label: "Users",
+  },
 
+  // 📊 REPORTS
+  {
+    key: "reports",
+    icon: <BarChartOutlined />,
+    label: "Reports",
+  },
+
+  // 📁 PROJECTS (Optional but powerful 🔥)
+  // {
+  //   key: "projects",
+  //   icon: <DatabaseOutlined />,
+  //   label: "Projects",
+  // },
+
+  // 🔔 NOTIFICATIONS
+  {
+    key: "notifications",
+    icon: <MessageSquare size={18} />,
+    label: "Notifications",
+  },
+];
   // Set the correct menu folder open on mount / navigate if it matches child keys
   useEffect(() => {
     const adminMenu = ["contact", "users", "roles", "admin"];
@@ -250,12 +195,14 @@ const Sidebar = ({
     if (!itemKey) return false;
 
     // Exact match
-    if (selectedKey === itemKey || pathname === `/${itemKey}`) return true;
+    if (selectedKey === itemKey) return true;
 
     // Direct match against logic from the provided code block
     const parentItem = menuItems.find((m) => m.key === itemKey);
     if (parentItem && parentItem.children && parentItem.children.length > 0) {
-      return parentItem.children.some((c) => selectedKey === c.key || pathname === `/${c.key}`);
+     return parentItem.children.some((c) => 
+  selectedKey === c.key
+);
     }
 
     return false;
@@ -297,14 +244,14 @@ const Sidebar = ({
             return (
               <div
                 key={child.key}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!child.noRoute) {
-                    navigate(`/${child.key}`);
-                  }
-                  setOpenMenu(null);
-                  if (isMobile) setCollapsed(false);
-                }}
+              onClick={() => {
+  if (!child.noRoute) {
+    setActive(child.key);          // ✅ ADD THIS
+    navigate(`/${child.key}`);
+  }
+  setOpenMenu(item.key);
+  if (isMobile) setCollapsed(true);
+}}
                 role="button"
                 tabIndex={0}
                 className="transition-all duration-200"
@@ -397,17 +344,18 @@ const Sidebar = ({
     // Normal behavior (not collapsed or mobile)
     const button = (
       <div
-        onClick={() => {
-          if (item.children && item.children.length > 0) {
-            setOpenMenu(openMenu === item.key ? null : item.key);
-          } else {
-            if (!item.noRoute) {
-              navigate(`/${item.key}`);
-            }
-            if (isMobile) setCollapsed(false);
-            setOpenMenu(null);
-          }
-        }}
+       onClick={() => {
+  if (item.children && item.children.length > 0) {
+    setOpenMenu(openMenu === item.key ? null : item.key);
+  } else {
+    if (!item.noRoute) {
+      setActive(item.key);
+      navigate(`/${item.key}`);   // ✅ THIS LINE
+    }
+    if (isMobile) setCollapsed(false);
+    setOpenMenu(null);
+  }
+}}
         className="group transition-all duration-200"
         style={{
           padding: collapsed && !isMobile ? 18 : "14px 18px",
@@ -541,8 +489,11 @@ const Sidebar = ({
                 }}
                 className="shadow-sm"
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => navigate("/dashboard")}>
-                  <div
+                <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => {
+  setActive("tickets");
+  navigate("/tickets");
+}}>
+                  <div  
                     style={{
                       background: primaryColor || "#1C2244",
                       padding: 8,
@@ -557,7 +508,7 @@ const Sidebar = ({
 
                   {(!collapsed || isMobile) && (
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 18, color: theme === "dark" ? "#ffffff" : "#111827" }}>CRM</div>
+                      <div style={{ fontWeight: 700, fontSize: 18, color: theme === "dark" ? "#ffffff" : "#111827" }}>Ticket</div>
                       <div style={{ fontSize: 12, color: theme === "dark" ? "#9CA3AF" : "#6b7280" }}>
                         Management
                       </div>
@@ -589,7 +540,7 @@ const Sidebar = ({
                                 key={child.key}
                                 onClick={() => {
                                   if (!child.noRoute) {
-                                    navigate(`/${child.key}`);
+                                   navigate(`/${child.key}`);
                                   }
                                   setOpenMenu(item.key); // keep parent open / active in inline mode
                                   if (isMobile) setCollapsed(true);
@@ -629,9 +580,10 @@ const Sidebar = ({
               <Tooltip title={collapsed && !isMobile ? "Settings" : ""} placement="right">
                 <div
                   onClick={() => {
-                    navigate("/settings");
-                    if (isMobile) setCollapsed(true);
-                  }}
+  setActive("settings");
+  navigate("/settings");   // ✅ ADD THIS LINE
+  if (isMobile) setCollapsed(true);
+}}
                   role="button"
                   tabIndex={0}
                   className="transition-all duration-200 hover:bg-gray-50"

@@ -7,21 +7,21 @@ import {
   LogoutOutlined,
   SettingOutlined
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 
 const { Header } = Layout;
 const { Option } = Select;
 
 export default function AppHeader({ collapsed, setCollapsed }) {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const currentUser = authService.getCurrentUser();
   
   const handleLogout = () => {
     // Remove all auth data from localStorage
     authService.logout();
     // Redirect to login page
-    navigate("/login");
+   console.log("Logged out");
   };
 
   return (
@@ -79,9 +79,9 @@ export default function AppHeader({ collapsed, setCollapsed }) {
 ],
   onClick: ({ key }) => {
 
-    if (key === "profile") {
-      navigate("/settings");
-    }
+   if (key === "profile") {
+  console.log("Profile clicked");
+}
 
     if (key === "logout") {
       handleLogout();
