@@ -2,8 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Popover, Tooltip, Grid } from "antd";
+
 import { Megaphone, MessageSquare,BadgeIndianRupee } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
+
+import { Megaphone, MessageSquare,BadgeIndianRupee, Waypoints, WaypointsIcon, Milestone } from "lucide-react";
+//import { MessageSquare } from "lucide-react";
 
 // Ant Design Icons
 import {
@@ -16,7 +21,11 @@ import {
   BarChartOutlined,
   SettingOutlined,
   RiseOutlined,
-  CalendarOutlined
+  CalendarOutlined,
+  HistoryOutlined,
+  ThunderboltOutlined,
+  PullRequestOutlined,
+  AuditOutlined
 } from "@ant-design/icons";
 
 // Lucide Icons
@@ -128,6 +137,8 @@ const selectedKey = location.pathname.split("/")[1] || "dashboard";
     label: "Users",
   },
 
+  
+
   // 📊 REPORTS
   {
     key: "reports",
@@ -151,7 +162,7 @@ const selectedKey = location.pathname.split("/")[1] || "dashboard";
 ];
   // Set the correct menu folder open on mount / navigate if it matches child keys
   useEffect(() => {
-    const adminMenu = ["contact", "users", "roles", "admin"];
+    const adminMenu = ["contact", "users", "roles", "audit-logs", "lead-automation", "action-plans", "admin"];
 
     const salesMenu = [
       "leads",
@@ -473,7 +484,7 @@ const selectedKey = location.pathname.split("/")[1] || "dashboard";
                 top: 0,
                 left: 0,
                 bottom: 0,
-                zIndex: 100,
+                zIndex: isMobile ? 2000 : 100,
               }}
             >
               {/* Top (Logo) */}
