@@ -7,7 +7,7 @@ import { Megaphone, MessageSquare,BadgeIndianRupee } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 
-import { Megaphone, MessageSquare,BadgeIndianRupee, Waypoints, WaypointsIcon, Milestone } from "lucide-react";
+//import { Megaphone, MessageSquare,BadgeIndianRupee, Waypoints, WaypointsIcon, Milestone } from "lucide-react";
 //import { MessageSquare } from "lucide-react";
 
 // Ant Design Icons

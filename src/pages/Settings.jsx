@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Input, Button, Switch, Form, Spin, message, Avatar, Upload } from "antd";
 import { UserOutlined, LockOutlined, BellOutlined, HomeOutlined, EditOutlined, PlusOutlined, UploadOutlined, AppstoreOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
-import companyService from "../services/companyService";
-import authService from "../services/authService";
-import ServiceCatalog from "./settings/ServiceCatalog";
+//import companyService from "../services/companyService";
+//import authService from "../services/authService";
+//import ServiceCatalog from "./settings/ServiceCatalog";
 
 
 export default function Settings() {
