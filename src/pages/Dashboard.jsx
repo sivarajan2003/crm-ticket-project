@@ -7,6 +7,8 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined
 } from "@ant-design/icons";
+import { Modal } from "antd";
+import { useState } from "react";
 
 const Dashboard = () => {
 
@@ -22,6 +24,10 @@ const Dashboard = () => {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
   };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+const showModal = () => setIsModalOpen(true);
+const handleCancel = () => setIsModalOpen(false);
 
   return (
     <div style={{ padding: "20px", background: "#f5f6f8", minHeight: "100vh" }}>
@@ -92,19 +98,21 @@ const Dashboard = () => {
   ].map((item, i) => (
     <Col xs={24} sm={12} lg={6} key={i}>
       <motion.div
-        variants={cardAnimation}
-        initial="hidden"
-        animate="visible"
-        whileHover={{ scale: 1.08 }}
-      >
+  variants={cardAnimation}
+  initial="hidden"
+  animate="visible"
+  transition={{ delay: i * 0.1 }} // stagger animation
+  whileHover={{ scale: 1.06 }}
+>
         <Card
-          style={{
-            borderRadius: 16,
-            boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-            cursor: "pointer",
-            transition: "0.3s"
-          }}
-        >
+  style={{
+    borderRadius: 16,
+    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+    cursor: "pointer",
+    transition: "0.3s",
+  }}
+  hoverable
+>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
 
             {/* TEXT */}
@@ -128,20 +136,46 @@ const Dashboard = () => {
             </div>
 
             {/* ICON */}
-            <div style={{
-              width: 46,
-              height: 46,
-              borderRadius: 12,
-              background: `${item.color}15`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: item.color,
-              fontSize: 22
-            }}>
-              {item.icon}
-            </div>
-
+           {/* ICON */}
+<motion.div
+  animate={{
+    y: [0, -6, 0],   // floating up-down
+    rotate: [0, 8, -8, 0], // slight rotate
+  }}
+  transition={{
+    duration: 3,
+    repeat: Infinity,
+    ease: "easeInOut"
+  }}
+  whileHover={{
+    scale: 1.2,
+    rotate: 15
+  }}
+  style={{
+    width: 50,
+    height: 50,
+    borderRadius: 14,
+    background: `${item.color}15`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: item.color,
+    fontSize: 22,
+    boxShadow: `0 4px 12px ${item.color}30`
+  }}
+>
+  <motion.div
+    animate={{
+      scale: [1, 1.2, 1], // pulse effect
+    }}
+    transition={{
+      duration: 2,
+      repeat: Infinity
+    }}
+  >
+    {item.icon}
+  </motion.div>
+</motion.div>
           </div>
         </Card>
       </motion.div>
@@ -235,13 +269,46 @@ const Dashboard = () => {
             </div>
 
             <button style={primaryBtn}>Export Reports</button>
-            <button style={secondaryBtn}>Transaction History</button>
-
+            <button style={secondaryBtn} onClick={showModal}>
+  Transaction History
+</button>
           </Card>
         </Col>
 
       </Row>
+<Modal
+  title="Transaction History"
+  open={isModalOpen}
+  onCancel={handleCancel}
+  footer={null}
+  width={600}
+>
+  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+    <thead>
+      <tr style={{ textAlign: "left", color: "#9ca3af" }}>
+        <th style={th}>ID</th>
+        <th style={th}>Action</th>
+        <th style={th}>User</th>
+        <th style={th}>Date</th>
+      </tr>
+    </thead>
 
+    <tbody>
+      {[ 
+        { id: 1, action: "Created Ticket", user: "John", date: "01 Apr" },
+        { id: 2, action: "Updated Status", user: "Mike", date: "02 Apr" },
+        { id: 3, action: "Closed Ticket", user: "John", date: "03 Apr" },
+      ].map((item) => (
+        <tr key={item.id} style={row}>
+          <td style={td}>#{item.id}</td>
+          <td style={td}>{item.action}</td>
+          <td style={td}>{item.user}</td>
+          <td style={td}>{item.date}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Modal>
     </div>
   );
 };
