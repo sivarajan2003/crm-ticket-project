@@ -96,7 +96,7 @@ const handleCancel = () => setIsModalOpen(false);
       icon: <CloseCircleOutlined />,
     },
   ].map((item, i) => (
-    <Col xs={24} sm={12} lg={6} key={i}>
+    <Col xs={12} sm={12} md={8} lg={6} key={i}>
       <motion.div
   variants={cardAnimation}
   initial="hidden"
@@ -222,10 +222,19 @@ const handleCancel = () => setIsModalOpen(false);
                       </div>
                     </td>
 
-                    <td style={td}>
-                      <span style={statusStyle(t.status)}>
-                        {t.status}
-                      </span>
+                    <td style={{ ...td, textAlign: "center" }}>
+<span style={{
+  ...statusStyle(t.status),
+  display: "inline-flex",
+  justifyContent: "center",
+  alignItems: "center",
+  whiteSpace: "nowrap",
+  padding: "4px 12px",   // 🔥 control size instead of minWidth
+  fontSize: 12,
+  fontWeight: 500
+}}>
+  {t.status}
+</span>
                     </td>
                   </tr>
                 ))}
@@ -283,7 +292,11 @@ const handleCancel = () => setIsModalOpen(false);
   footer={null}
   width={600}
 >
-  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+  <table style={{
+  width: "100%",
+  borderCollapse: "collapse",
+  tableLayout: "fixed"   // 🔥 prevents overflow
+}}>
     <thead>
       <tr style={{ textAlign: "left", color: "#9ca3af" }}>
         <th style={th}>ID</th>
@@ -320,13 +333,14 @@ export default Dashboard;
 
 const th = {
   padding: "10px",
+  textAlign: "left",
 };
 
 const td = {
   padding: "12px",
   fontSize: 14,
+  verticalAlign: "middle",
 };
-
 const row = {
   borderTop: "1px solid #eee",
 };

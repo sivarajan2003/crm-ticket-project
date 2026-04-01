@@ -140,7 +140,7 @@ const isMobile = !screens.md;
       icon: <XCircle size={24} />,
     },
   ].map((item, index) => (
-    <Col xs={24} sm={12} lg={6} key={index}>
+    <Col xs={12} sm={12} md={8} lg={6} key={index}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -150,7 +150,7 @@ const isMobile = !screens.md;
           style={{
             background: item.gradient,
             borderRadius: 18,
-            padding: "20px",
+           padding: isMobile ? "14px" : "20px",
             color: "#fff",
             display: "flex",
             justifyContent: "space-between",

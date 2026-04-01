@@ -1,6 +1,9 @@
 import { Card, Input, Button, Select, Row, Col, Typography, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Tabs, Grid } from "antd";
+import { Collapse } from "antd";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 const { Title, Text } = Typography;
 
 export default function SupportTicket() {
@@ -69,6 +72,31 @@ export default function SupportTicket() {
 const { useBreakpoint } = Grid;
 const screens = useBreakpoint();
 const isMobile = !screens.md;
+
+const exportToExcel = () => {
+  const excelData = filtered.map((item) => ({
+    "Support Req No": item.id,
+    "Request Type": item.type,
+    "Date": item.date,
+    "Status": item.status,
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(excelData);
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Support Tickets");
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array",
+  });
+
+  const dataBlob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  saveAs(dataBlob, "support_tickets.xlsx");
+};
   return (
     <div
   style={{
@@ -218,18 +246,36 @@ const isMobile = !screens.md;
 
     {/* FAQ */}
     <Tabs.TabPane tab="FAQ" key="2">
-      <Card>
-        <p><b>How do tickets get issued?</b></p>
+  <Card>
+    <Collapse accordion>
+
+      <Collapse.Panel header="How do tickets get issued?" key="1">
         <p style={{ color: "#6b7280" }}>
-          To issue a ticket, go to booking search and create PNR.
+          To issue a ticket, go to booking search, create PNR and confirm booking.
         </p>
+      </Collapse.Panel>
 
-        <p>What is refund process?</p>
-        <p>How to reissue tickets?</p>
-        <p>How to view ticket history?</p>
-      </Card>
-    </Tabs.TabPane>
+      <Collapse.Panel header="What is refund process?" key="2">
+        <p style={{ color: "#6b7280" }}>
+          Refund requests can be raised via support ticket and processed within 3–5 days.
+        </p>
+      </Collapse.Panel>
 
+      <Collapse.Panel header="How to reissue tickets?" key="3">
+        <p style={{ color: "#6b7280" }}>
+          Use reissue option, select new date and confirm changes.
+        </p>
+      </Collapse.Panel>
+
+      <Collapse.Panel header="How to view ticket history?" key="4">
+        <p style={{ color: "#6b7280" }}>
+          Go to "My Tickets" and search using PNR or ticket number.
+        </p>
+      </Collapse.Panel>
+
+    </Collapse>
+  </Card>
+</Tabs.TabPane>
   </Tabs>
 
 ) : (
@@ -245,15 +291,34 @@ const isMobile = !screens.md;
 
     <Col xs={24} lg={8}>
       <Card title="Frequently Asked Questions">
-        <p><b>How do tickets get issued?</b></p>
-        <p style={{ color: "#6b7280" }}>
-          To issue a ticket, go to the booking search...
-        </p>
+  <Collapse accordion>
 
-        <p>What is the process refund tickets?</p>
-        <p>How can I reissue tickets?</p>
-        <p>How can see ticket history by PNR?</p>
-      </Card>
+    <Collapse.Panel header="How do tickets get issued?" key="1">
+      <p style={{ color: "#6b7280" }}>
+        To issue a ticket, go to booking search, create PNR, select flight and confirm payment.
+      </p>
+    </Collapse.Panel>
+
+    <Collapse.Panel header="What is the refund process?" key="2">
+      <p style={{ color: "#6b7280" }}>
+        Refund requests can be submitted through support ticket. Processing takes 3–5 working days.
+      </p>
+    </Collapse.Panel>
+
+    <Collapse.Panel header="How can I reissue tickets?" key="3">
+      <p style={{ color: "#6b7280" }}>
+        Use reissue option in booking panel, select new date and confirm changes.
+      </p>
+    </Collapse.Panel>
+
+    <Collapse.Panel header="How to view ticket history?" key="4">
+      <p style={{ color: "#6b7280" }}>
+        Go to "My Tickets" and search using PNR or ticket number.
+      </p>
+    </Collapse.Panel>
+
+  </Collapse>
+</Card>
     </Col>
 
   </Row>

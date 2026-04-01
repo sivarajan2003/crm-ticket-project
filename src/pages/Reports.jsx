@@ -9,6 +9,9 @@ import {
   Button,
   Typography,
 } from "antd";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import { Grid } from "antd";
 import {
   FileTextOutlined,
   CheckCircleOutlined,
@@ -34,42 +37,73 @@ export default function Reports() {
   const filtered = data.filter((d) =>
     status === "All" ? true : d.status === status
   );
-
+const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
+const isMobile = !screens.md;
   // 🔥 TABLE
   const columns = [
-    { title: "ID", dataIndex: "id" },
-    { title: "Title", dataIndex: "title" },
-    { title: "User", dataIndex: "user" },
-    { title: "Date", dataIndex: "date" },
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (s) => (
-        <span
-          style={{
-            padding: "4px 10px",
-            borderRadius: 20,
-            fontSize: 12,
-            background:
-              s === "Open"
-                ? "#fef3c7"
-                : s === "In Progress"
-                ? "#dbeafe"
-                : "#dcfce7",
-            color:
-              s === "Open"
-                ? "#b45309"
-                : s === "In Progress"
-                ? "#1d4ed8"
-                : "#15803d",
-          }}
-        >
-          {s}
-        </span>
+   { title: "ID", dataIndex: "id", width: 60 },
+{ title: "Title", dataIndex: "title", width: 120 },
+{ title: "User", dataIndex: "user", width: 100 },
+{ title: "Date", dataIndex: "date", width: 100 },
+{
+  title: "Status",
+  dataIndex: "status",
+  width: 140,              // 🔥 IMPORTANT
+  align: "center",         // 🔥 CENTER FIX
+   render: (s) => (
+  <span style={{
+    display: "inline-flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "4px 12px",
+    borderRadius: 20,
+    fontSize: 12,
+    fontWeight: 500,
+    whiteSpace: "nowrap",   // 🔥 prevent break
+    background:
+      s === "Open"
+        ? "#fef3c7"
+        : s === "In Progress"
+        ? "#dbeafe"
+        : "#dcfce7",
+    color:
+      s === "Open"
+        ? "#b45309"
+        : s === "In Progress"
+        ? "#1d4ed8"
+        : "#15803d",
+  }}>
+    {s}
+  </span>
+
       ),
     },
   ];
+const exportToExcel = () => {
+  const excelData = filtered.map((item) => ({
+    "Support Req No": item.id,
+    "Request Type": item.type,
+    "Date": item.date,
+    "Status": item.status,
+  }));
 
+  const worksheet = XLSX.utils.json_to_sheet(excelData);
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Support Tickets");
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array",
+  });
+
+  const dataBlob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  saveAs(dataBlob, "support_tickets.xlsx");
+};
   return (
     <div style={{ padding: 20, background: "#f5f6f8", minHeight: "100vh" }}>
       
@@ -80,14 +114,14 @@ export default function Reports() {
       </div>
 
       {/* 🔥 STATS */}
-      <Row gutter={16} style={{ marginBottom: 20 }}>
+      <Row gutter={[12, 12]} style={{ marginBottom: 20 }}>
         {[
           { title: "Total Tickets", value: data.length, icon: <FileTextOutlined /> },
           { title: "Open", value: data.filter(d => d.status === "Open").length, icon: <ClockCircleOutlined /> },
           { title: "In Progress", value: data.filter(d => d.status === "In Progress").length, icon: <CheckCircleOutlined /> },
           { title: "Closed", value: data.filter(d => d.status === "Closed").length, icon: <CloseCircleOutlined /> },
         ].map((item, i) => (
-          <Col xs={24} sm={12} lg={6} key={i}>
+          <Col xs={12} sm={12} md={8} lg={6} key={i}>
             <Card style={card}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
@@ -122,22 +156,80 @@ export default function Reports() {
           </Col>
 
           <Col xs={24} sm={12} lg={4}>
-            <Button type="primary" icon={<DownloadOutlined />} block>
-              Export
-            </Button>
+            <Button onClick={exportToExcel} icon={<DownloadOutlined />}>
+  Export
+</Button>
           </Col>
         </Row>
       </Card>
 
       {/* 🔥 TABLE */}
-      <Card style={{ borderRadius: 14 }}>
-        <Table
-          columns={columns}
-          dataSource={filtered}
-          rowKey="id"
-          pagination={{ pageSize: 5 }}
-        />
+      {isMobile ? (
+
+  /* 📱 MOBILE → CARD VIEW (NO SCROLL) */
+  <div>
+    {filtered.map((t) => (
+      <Card
+        key={t.id}
+        style={{
+          marginBottom: 12,
+          borderRadius: 12,
+          boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
+        }}
+      >
+        {/* TITLE */}
+        <div style={{ fontWeight: 600 }}>{t.title}</div>
+        <div style={{ fontSize: 12, color: "#9ca3af" }}>
+          #{t.id}
+        </div>
+
+        {/* DETAILS */}
+        <div style={{ marginTop: 8 }}>
+          <div><b>User:</b> {t.user}</div>
+          <div><b>Date:</b> {t.date}</div>
+        </div>
+
+        {/* STATUS */}
+        <div style={{ marginTop: 10 }}>
+          <span style={{
+            padding: "4px 12px",
+            borderRadius: 20,
+            fontSize: 12,
+            fontWeight: 500,
+            whiteSpace: "nowrap",
+            background:
+              t.status === "Open"
+                ? "#fef3c7"
+                : t.status === "In Progress"
+                ? "#dbeafe"
+                : "#dcfce7",
+            color:
+              t.status === "Open"
+                ? "#b45309"
+                : t.status === "In Progress"
+                ? "#1d4ed8"
+                : "#15803d",
+          }}>
+            {t.status}
+          </span>
+        </div>
       </Card>
+    ))}
+  </div>
+
+) : (
+
+  /* 💻 DESKTOP → TABLE */
+  <Card style={{ borderRadius: 14 }}>
+    <Table
+      columns={columns}
+      dataSource={filtered}
+      rowKey="id"
+      pagination={{ pageSize: 5 }}
+    />
+  </Card>
+
+)}
     </div>
   );
 }
