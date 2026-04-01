@@ -139,12 +139,12 @@ const selectedKey = location.pathname.split("/")[1] || "dashboard";
 
   
 
-  // 📊 REPORTS
-  {
-    key: "reports",
-    icon: <BarChartOutlined />,
-    label: "Reports",
-  },
+  // // 📊 REPORTS
+  // {
+  //   key: "reports",
+  //   icon: <BarChartOutlined />,
+  //   label: "Reports",
+  // },
 
   // 📁 PROJECTS (Optional but powerful 🔥)
   // {
