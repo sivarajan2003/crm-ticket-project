@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   Card, Input, Button, Tag, Row, Col, Avatar,
-  Modal, Form, Select, message
+  Modal, Form, Select, message, Tabs, Grid
 } from "antd";
 import {
   SearchOutlined, PlusOutlined,
@@ -86,7 +86,9 @@ export default function Users() {
     setModalOpen(false);
     form.resetFields();
   };
-
+const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
+const isMobile = !screens.md;
   return (
     <div style={{ padding: 20, background: "#f5f6f8", minHeight: "100vh" }}>
 
@@ -114,85 +116,145 @@ export default function Users() {
       </Card>
 
       {/* TABLE */}
-      <Card style={{ borderRadius: 14 }}>
-        <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>
-          User Directory ({filtered.length})
-        </div>
+      {/* 🔥 RESPONSIVE VIEW */}
 
-        <table className="w-full">
-          <thead>
-            <tr style={{ textAlign: "left", color: "#9ca3af" }}>
-              <th>User</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th style={{ textAlign: "center" }}>Actions</th>
+{isMobile ? (
+
+  /* 📱 MOBILE → CARD + TABS */
+  <Tabs defaultActiveKey="1">
+
+    <Tabs.TabPane tab="Users" key="1">
+
+      {filtered.map((u) => {
+        const isAdmin = currentUser.role === "Admin";
+
+        return (
+          <Card
+            key={u.id}
+            style={{
+              marginBottom: 12,
+              borderRadius: 12,
+              boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Avatar style={{ background: "#6366f1" }}>
+                {u.name.charAt(0)}
+              </Avatar>
+
+              <div>
+                <div style={{ fontWeight: 600 }}>{u.name}</div>
+                <div style={{ fontSize: 12, color: "#9ca3af" }}>{u.code}</div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 10 }}>{u.email}</div>
+
+            <div style={{ marginTop: 8 }}>
+              <Tag color="blue">{u.role}</Tag>
+              <Tag color={getStatusColor(u.status)}>{u.status}</Tag>
+            </div>
+
+            {/* ACTIONS */}
+            <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+              <EyeOutlined />
+
+              <EditOutlined
+                style={{ color: "#1677ff" }}
+                onClick={() => handleEdit(u)}
+              />
+
+              <DeleteOutlined
+                style={{ color: "#ef4444" }}
+                onClick={() => handleDelete(u.id)}
+              />
+            </div>
+
+          </Card>
+        );
+      })}
+
+    </Tabs.TabPane>
+
+  </Tabs>
+
+) : (
+
+  /* 💻 DESKTOP → ORIGINAL TABLE */
+  <Card style={{ borderRadius: 14 }}>
+    <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>
+      User Directory ({filtered.length})
+    </div>
+
+    <table className="w-full">
+      <thead>
+        <tr style={{ textAlign: "left", color: "#9ca3af" }}>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th style={{ textAlign: "center" }}>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {filtered.map((u) => {
+          const isAdmin = currentUser.role === "Admin";
+
+          return (
+            <tr key={u.id} style={{ borderTop: "1px solid #eee" }}>
+
+              <td style={{ padding: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Avatar style={{ background: "#6366f1" }}>
+                    {u.name.charAt(0)}
+                  </Avatar>
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{u.name}</div>
+                    <div style={{ fontSize: 12, color: "#9ca3af" }}>{u.code}</div>
+                  </div>
+                </div>
+              </td>
+
+              <td>{u.email}</td>
+
+              <td><Tag color="blue">{u.role}</Tag></td>
+
+              <td>
+                <Tag color={getStatusColor(u.status)}>
+                  {u.status}
+                </Tag>
+              </td>
+
+              {/* ACTIONS */}
+              <td style={{ textAlign: "center" }}>
+                <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+
+                  <EyeOutlined />
+
+                  <EditOutlined
+                    style={{ color: "#1677ff" }}
+                    disabled={!isAdmin}
+                    onClick={() => handleEdit(u)}
+                  />
+
+                  <DeleteOutlined
+                    style={{ color: "#ef4444" }}
+                    disabled={!isAdmin}
+                    onClick={() => handleDelete(u.id)}
+                  />
+
+                </div>
+              </td>
+
             </tr>
-          </thead>
+          );
+        })}
+      </tbody>
+    </table>
+  </Card>
 
-          <tbody>
-            {filtered.map((u) => {
-              const isAdmin = currentUser.role === "Admin";
-
-              return (
-                <tr key={u.id} style={{ borderTop: "1px solid #eee" }}>
-
-                  {/* USER */}
-                  <td style={{ padding: 10 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <Avatar style={{ background: "#6366f1" }}>
-                        {u.name.charAt(0)}
-                      </Avatar>
-                      <div>
-                        <div style={{ fontWeight: 600 }}>{u.name}</div>
-                        <div style={{ fontSize: 12, color: "#9ca3af" }}>{u.code}</div>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* EMAIL */}
-                  <td>{u.email}</td>
-
-                  {/* ROLE */}
-                  <td>
-                    <Tag color="blue">{u.role}</Tag>
-                  </td>
-
-                  {/* STATUS */}
-                  <td>
-                    <Tag color={getStatusColor(u.status)}>
-                      {u.status}
-                    </Tag>
-                  </td>
-
-                  {/* ACTIONS */}
-                  <td style={{ textAlign: "center" }}>
-                    <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
-
-                      <Button icon={<EyeOutlined />} />
-
-                      <Button
-                        icon={<EditOutlined />}
-                        disabled={!isAdmin}
-                        onClick={() => handleEdit(u)}
-                      />
-
-                      <Button
-                        icon={<DeleteOutlined />}
-                        danger
-                        disabled={!isAdmin}
-                        onClick={() => handleDelete(u.id)}
-                      />
-
-                    </div>
-                  </td>
-
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </Card>
+)}
 
       {/* 🔥 MODAL */}
       <Modal

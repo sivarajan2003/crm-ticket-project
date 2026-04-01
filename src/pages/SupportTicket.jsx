@@ -1,6 +1,6 @@
 import { Card, Input, Button, Select, Row, Col, Typography, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-
+import { Tabs, Grid } from "antd";
 const { Title, Text } = Typography;
 
 export default function SupportTicket() {
@@ -66,11 +66,27 @@ export default function SupportTicket() {
       status: "Cancel",
     },
   ];
-
+const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
+const isMobile = !screens.md;
   return (
-    <div style={{ padding: 20, background: "#f5f6f8" }}>
+    <div
+  style={{
+    padding: isMobile ? 12 : 20,
+    background: "#f5f6f8",
+    minHeight: "100vh"
+  }}
+>
       {/* HEADER */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+      <div
+  style={{
+    display: "flex",
+    flexWrap: "wrap",          // ✅ allow wrapping
+    gap: 10,
+    justifyContent: "space-between",
+    marginBottom: 20
+  }}
+>
         <div>
           <Title level={3} style={{ marginBottom: 0 }}>
             Support Ticket
@@ -80,11 +96,19 @@ export default function SupportTicket() {
           </Text>
         </div>
 
-        <div style={{ display: "flex", gap: 10 }}>
+        <div
+  style={{
+    display: "flex",
+    flexWrap: "wrap",     // ✅ prevent overflow
+    gap: 10,
+    width: "100%",
+    justifyContent: isMobile ? "flex-start" : "flex-end"
+  }}
+>
           <Input
             placeholder="Search"
             prefix={<SearchOutlined />}
-            style={{ width: 200 }}
+            style={{ width: isMobile ? "100%" : 200 }}
           />
           <Button>₹ 1,120</Button>
           <Button type="primary">Air Travel</Button>
@@ -99,42 +123,42 @@ export default function SupportTicket() {
         </Text>
 
         <Row gutter={16} style={{ marginTop: 20 }}>
-          <Col span={6}>
+          <Col xs={24} sm={12} lg={6}>
             <Text>Select Request Type</Text>
             <Select defaultValue="Reissue Request" style={{ width: "100%" }} />
           </Col>
 
-          <Col span={6}>
+          <Col xs={24} sm={12} lg={6}>
             <Text>Search PNR</Text>
             <Input placeholder="02AU6FD" />
           </Col>
 
-          <Col span={6}>
+          <Col xs={24} sm={12} lg={6}>
             <Text>Passenger Name</Text>
             <Input placeholder="Mark Anderson" />
           </Col>
 
-          <Col span={6}>
+          <Col xs={24} sm={12} lg={6}>
             <Text>Ticket Number</Text>
             <Input placeholder="996502333736727" />
           </Col>
 
-          <Col span={6} style={{ marginTop: 15 }}>
+          <Col xs={24} sm={12} lg={6} style={{ marginTop: 15 }}>
             <Text>Choose Reason</Text>
             <Select defaultValue="Voluntary Reissue" style={{ width: "100%" }} />
           </Col>
 
-          <Col span={6} style={{ marginTop: 15 }}>
+          <Col xs={24} sm={12} lg={6} style={{ marginTop: 15 }}>
             <Text>Change Date</Text>
             <Input placeholder="20 Jan 2023" />
           </Col>
 
-          <Col span={6} style={{ marginTop: 15 }}>
+          <Col xs={24} sm={12} lg={6} style={{ marginTop: 15 }}>
             <Text>Flight No</Text>
             <Input placeholder="BG602" />
           </Col>
 
-          <Col span={6} style={{ marginTop: 15 }}>
+          <Col xs={24} sm={12} lg={6} style={{ marginTop: 15 }}>
             <Text>Remarks</Text>
             <Input placeholder="Write your remarks" />
           </Col>
@@ -146,28 +170,95 @@ export default function SupportTicket() {
       </Card>
 
       {/* HISTORY + FAQ */}
-      <Row gutter={16}>
-        <Col span={16}>
-          <Card title="Latest Support History" extra={<Button>Export</Button>}>
-            <Table columns={columns} dataSource={data} pagination={false} />
-          </Card>
-        </Col>
+      {/* 🔥 RESPONSIVE HISTORY */}
 
-        <Col span={8}>
-          <Card title="Frequently Asked Questions">
-            <p><b>How do tickets get issued?</b></p>
-            <p style={{ color: "#6b7280" }}>
-              To issue a ticket, go to the booking search, make a booking,
-              fill out passenger info, create a PNR, then click order ticket.
-            </p>
+{isMobile ? (
 
-            <p>What is the process refund tickets?</p>
-            <p>How can I reissue tickets?</p>
-            <p>How can see ticket history by PNR?</p>
-            <p>How can see issue ticket?</p>
-          </Card>
-        </Col>
-      </Row>
+  /* 📱 MOBILE → TABS + CARD */
+  <Tabs defaultActiveKey="1">
+
+    {/* HISTORY */}
+    <Tabs.TabPane tab="History" key="1">
+
+      {data.map((item) => (
+        <Card
+          key={item.id}
+          style={{
+            marginBottom: 12,
+            borderRadius: 12,
+            boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
+          }}
+        >
+          <div style={{ fontWeight: 600 }}>{item.type}</div>
+          <div style={{ fontSize: 13, color: "#6b7280" }}>{item.id}</div>
+
+          <div style={{ marginTop: 6 }}>{item.date}</div>
+
+          <div style={{ marginTop: 8 }}>
+            <span
+              style={{
+                color:
+                  item.status === "Approve"
+                    ? "green"
+                    : item.status === "Cancel"
+                    ? "red"
+                    : item.status === "Inprocess"
+                    ? "#7c3aed"
+                    : "#1677ff",
+                fontWeight: 600,
+              }}
+            >
+              {item.status}
+            </span>
+          </div>
+        </Card>
+      ))}
+
+    </Tabs.TabPane>
+
+    {/* FAQ */}
+    <Tabs.TabPane tab="FAQ" key="2">
+      <Card>
+        <p><b>How do tickets get issued?</b></p>
+        <p style={{ color: "#6b7280" }}>
+          To issue a ticket, go to booking search and create PNR.
+        </p>
+
+        <p>What is refund process?</p>
+        <p>How to reissue tickets?</p>
+        <p>How to view ticket history?</p>
+      </Card>
+    </Tabs.TabPane>
+
+  </Tabs>
+
+) : (
+
+  /* 💻 DESKTOP → ORIGINAL */
+  <Row gutter={16}>
+
+    <Col xs={24} lg={16}>
+      <Card title="Latest Support History" extra={<Button>Export</Button>}>
+        <Table columns={columns} dataSource={data} pagination={false} />
+      </Card>
+    </Col>
+
+    <Col xs={24} lg={8}>
+      <Card title="Frequently Asked Questions">
+        <p><b>How do tickets get issued?</b></p>
+        <p style={{ color: "#6b7280" }}>
+          To issue a ticket, go to the booking search...
+        </p>
+
+        <p>What is the process refund tickets?</p>
+        <p>How can I reissue tickets?</p>
+        <p>How can see ticket history by PNR?</p>
+      </Card>
+    </Col>
+
+  </Row>
+
+)}
     </div>
   );
 }

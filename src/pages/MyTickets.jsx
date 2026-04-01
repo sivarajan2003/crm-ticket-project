@@ -23,7 +23,7 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
-
+import {  Grid } from "antd";
 const { Title, Text } = Typography;
 const { Option } = Select;
 
@@ -99,6 +99,9 @@ export default function MyTickets() {
       ),
     },
   ];
+  const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
+const isMobile = !screens.md;
 
   return (
     <div style={{ padding: 20, background: "#f5f6f8", minHeight: "100vh" }}>
@@ -233,13 +236,58 @@ export default function MyTickets() {
       </Card>
 
       {/* 🔥 TABLE */}
-      <Card style={{ borderRadius: 14 }}>
-        <Table
-          columns={columns}
-          dataSource={filtered}
-          rowKey="id"
-        />
+      {/* 🔥 RESPONSIVE VIEW */}
+
+{isMobile ? (
+
+  /* 📱 MOBILE VIEW → CARD FORMAT */
+  <div>
+    {filtered.map((t) => (
+      <Card
+        key={t.id}
+        style={{
+          marginBottom: 12,
+          borderRadius: 12,
+          boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
+        }}
+      >
+        <div style={{ fontWeight: 600 }}>{t.title}</div>
+        <div style={{ fontSize: 12, color: "#9ca3af" }}>
+          #{t.id}
+        </div>
+
+        <div style={{ marginTop: 8 }}>
+          <Tag color={statusColor[t.status]}>{t.status}</Tag>
+          <Tag color={priorityColor[t.priority]}>{t.priority}</Tag>
+        </div>
+
+        {/* ACTIONS */}
+        <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+          <EyeOutlined style={iconStyle} />
+          <EditOutlined style={{ ...iconStyle, color: "#1677ff" }} />
+          <DeleteOutlined
+            style={{ ...iconStyle, color: "#ef4444" }}
+            onClick={() =>
+              setTickets(tickets.filter(x => x.id !== t.id))
+            }
+          />
+        </div>
       </Card>
+    ))}
+  </div>
+
+) : (
+
+  /* 💻 DESKTOP VIEW → TABLE */
+  <Card style={{ borderRadius: 14 }}>
+    <Table
+      columns={columns}
+      dataSource={filtered}
+      rowKey="id"
+    />
+  </Card>
+
+)}
     </div>
   );
 }

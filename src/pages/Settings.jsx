@@ -1,5 +1,6 @@
 import React from "react";
 import { Row, Col, Input, Button, Switch, Avatar } from "antd";
+import { Tabs, Grid } from "antd";
 import {
   UserOutlined,
   LockOutlined,
@@ -8,7 +9,9 @@ import {
 } from "@ant-design/icons";
 
 export default function Settings() {
-
+const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
+const isMobile = !screens.md;
   return (
     <div style={{ padding: "20px", minHeight: "100vh", background: "#f5f6f8" }}>
 

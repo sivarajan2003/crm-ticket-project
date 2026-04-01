@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Modal, Input, Select, message } from "antd";
+import { Tabs, Grid } from "antd";
 export default function TicketsPage() {
   const navigate = useNavigate();
 
@@ -20,6 +21,9 @@ export default function TicketsPage() {
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [mode, setMode] = useState("view"); // view / edit
 const [currentTicket, setCurrentTicket] = useState(null);
+const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
+const isMobile = !screens.md;
 
   useEffect(() => {
     localStorage.setItem("tickets", JSON.stringify(tickets));
@@ -130,138 +134,186 @@ const handleSave = () => {
       </div>
 
       {/* 🔥 TABLE CARD */}
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: 14,
-          boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
-        }}
-      >
-        {/* HEADER */}
-        <div style={{ padding: "20px 24px", borderBottom: "1px solid #f0f0f0" }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#111827" }}>
-            Ticket Directory ({filteredTickets.length})
-          </span>
+     {/* 🔥 RESPONSIVE TABLE */}
+
+{isMobile ? (
+
+  /* 📱 MOBILE VIEW → CARD + TABS */
+  <Tabs defaultActiveKey="1">
+
+    <Tabs.TabPane tab="Tickets" key="1">
+
+      {filteredTickets.map((t) => (
+        <div
+          key={t.id}
+          style={{
+            background: "#fff",
+            padding: 16,
+            borderRadius: 12,
+            marginBottom: 12,
+            boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
+          }}
+        >
+          <div style={{ fontWeight: 600 }}>{t.title}</div>
+
+          <div style={{ fontSize: 13, color: "#6b7280" }}>
+            #{t.id} • {t.developer}
+          </div>
+
+          {/* STATUS */}
+          <div style={{ marginTop: 8 }}>
+            <span
+              style={{
+                padding: "4px 10px",
+                borderRadius: 20,
+                fontSize: 12,
+                background:
+                  t.status === "Open"
+                    ? "#fef3c7"
+                    : t.status === "In Progress"
+                    ? "#dbeafe"
+                    : "#dcfce7",
+                color:
+                  t.status === "Open"
+                    ? "#b45309"
+                    : t.status === "In Progress"
+                    ? "#1d4ed8"
+                    : "#15803d",
+              }}
+            >
+              {t.status}
+            </span>
+          </div>
+
+          {/* ACTIONS */}
+          <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+
+            <EyeOutlined
+              onClick={(e) => {
+                e.stopPropagation();
+                handleView(t);
+              }}
+            />
+
+            <EditOutlined
+              style={{ color: "#1677ff" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEdit(t);
+              }}
+            />
+
+            <DeleteOutlined
+              style={{ color: "#ef4444" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (window.confirm("Delete ticket?")) {
+                  setTickets(tickets.filter(item => item.id !== t.id));
+                }
+              }}
+            />
+
+          </div>
+
         </div>
+      ))}
 
-        {/* TABLE */}
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead style={{ background: "#f9fafb" }}>
-              <tr>
-                <th style={th}>ID</th>
-                <th style={th}>Title</th>
-                <th style={th}>Developer</th>
-                <th style={th}>Status</th>
-                <th style={th}>Actions</th>
-              </tr>
-            </thead>
+    </Tabs.TabPane>
 
-            <tbody>
-              {filteredTickets.map((t) => (
-                <tr
-                  key={t.id}
-                  style={{ borderTop: "1px solid #eee", cursor: "pointer" }}
-                  onClick={() => navigate(`/tickets/${t.id}`)}
+  </Tabs>
+
+) : (
+
+  /* 💻 DESKTOP VIEW → YOUR TABLE */
+  <div
+    style={{
+      background: "#fff",
+      borderRadius: 14,
+      boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
+    }}
+  >
+
+    <div style={{ padding: "20px 24px", borderBottom: "1px solid #f0f0f0" }}>
+      <span style={{ fontSize: 16, fontWeight: 600 }}>
+        Ticket Directory ({filteredTickets.length})
+      </span>
+    </div>
+
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead style={{ background: "#f9fafb" }}>
+          <tr>
+            <th style={th}>ID</th>
+            <th style={th}>Title</th>
+            <th style={th}>Developer</th>
+            <th style={th}>Status</th>
+            <th style={th}>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {filteredTickets.map((t) => (
+            <tr key={t.id}>
+              <td style={td}>#{t.id}</td>
+              <td style={td}>{t.title}</td>
+              <td style={td}>{t.developer}</td>
+
+              <td style={td}>
+                <span
+                  style={{
+                    padding: "5px 12px",
+                    borderRadius: "20px",
+                    fontSize: "12px",
+                    background:
+                      t.status === "Open"
+                        ? "#fef3c7"
+                        : t.status === "In Progress"
+                        ? "#dbeafe"
+                        : "#dcfce7",
+                    color:
+                      t.status === "Open"
+                        ? "#b45309"
+                        : t.status === "In Progress"
+                        ? "#1d4ed8"
+                        : "#15803d",
+                  }}
                 >
-                  <td style={td}>#{t.id}</td>
+                  {t.status}
+                </span>
+              </td>
 
-                  <td style={{ ...td, fontWeight: 600, color: "#111827" }}>
-                    {t.title}
-                  </td>
+              {/* ACTIONS FIXED */}
+              <td style={td}>
+                <div style={{ display: "flex", gap: 10 }}>
 
-                  <td style={td}>{t.developer}</td>
+                  <EyeOutlined onClick={() => handleView(t)} />
 
-                  <td style={td}>
-                    <span
-                      style={{
-                        padding: "5px 12px",
-                        borderRadius: "20px",
-                        fontSize: "12px",
-                        fontWeight: "500",
-                        background:
-                          t.status === "Open"
-                            ? "#fef3c7"
-                            : t.status === "In Progress"
-                            ? "#dbeafe"
-                            : "#dcfce7",
-                        color:
-                          t.status === "Open"
-                            ? "#b45309"
-                            : t.status === "In Progress"
-                            ? "#1d4ed8"
-                            : "#15803d",
-                      }}
-                    >
-                      {t.status}
-                    </span>
-                  </td>
+                  <EditOutlined
+                    style={{ color: "#1677ff" }}
+                    onClick={() => handleEdit(t)}
+                  />
 
-                  <td style={td}>
-  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <DeleteOutlined
+                    style={{ color: "#ef4444" }}
+                    onClick={() => {
+                      if (window.confirm("Delete ticket?")) {
+                        setTickets(tickets.filter(item => item.id !== t.id));
+                      }
+                    }}
+                  />
 
-    {/* 👁 VIEW */}
-    {/* 👁 VIEW */}
-<div
-  style={{
-    padding: "6px",
-    borderRadius: "6px",
-    background: "#f3f4f6",
-    cursor: "pointer"
-  }}
-  onClick={(e) => {
-    e.stopPropagation();
-    handleView(t);
-  }}
->
-  <EyeOutlined />
-</div>
+                </div>
+              </td>
 
-{/* ✏️ EDIT */}
-<div
-  style={{
-    background: "#1677ff",
-    padding: "6px 10px",
-    borderRadius: "6px",
-    color: "#fff",
-    cursor: "pointer"
-  }}
-  onClick={(e) => {
-    e.stopPropagation();
-    handleEdit(t);
-  }}
->
-  <EditOutlined />
-</div>
-    {/* 🗑 DELETE */}
-    <div
-      style={{
-        border: "1px solid #ef4444",
-        padding: "6px 10px",
-        borderRadius: "6px",
-        cursor: "pointer",
-        color: "#ef4444",
-        display: "flex",
-        alignItems: "center"
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (window.confirm("Delete ticket?")) {
-          setTickets(tickets.filter(item => item.id !== t.id));
-        }
-      }}
-    >
-      <DeleteOutlined />
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
 
   </div>
-</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+
+)}
       <Modal
   title={mode === "view" ? "View Ticket" : "Edit Ticket"}
   open={isModalOpen}
