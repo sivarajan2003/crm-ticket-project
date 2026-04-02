@@ -8,7 +8,7 @@ import { Outlet } from "react-router-dom";
 const { Content } = Layout;
 
 export default function MainLayout() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const [active, setActive] = useState("dashboard");

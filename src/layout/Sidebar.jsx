@@ -5,7 +5,7 @@ import { Popover, Tooltip, Grid } from "antd";
 
 import { Megaphone, MessageSquare,BadgeIndianRupee } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+  import { CodeOutlined } from "@ant-design/icons";
 
 //import { Megaphone, MessageSquare,BadgeIndianRupee, Waypoints, WaypointsIcon, Milestone } from "lucide-react";
 //import { MessageSquare } from "lucide-react";
@@ -95,6 +95,13 @@ const selectedKey = location.pathname.split("/")[1] || "dashboard";
     icon: <DashboardOutlined style={{ fontSize: 18 }} />,
     label: "Dashboard",
   },
+
+
+{
+  key: "developer",
+  icon: <CodeOutlined />,
+  label: "Developer Dashboard",
+},
 {
     key: "support-ticket",
     icon: <MessageSquare size={18} />,
@@ -363,7 +370,7 @@ const selectedKey = location.pathname.split("/")[1] || "dashboard";
       setActive(item.key);
       navigate(`/${item.key}`);   // ✅ THIS LINE
     }
-    if (isMobile) setCollapsed(false);
+    if (isMobile) setCollapsed(true);
     setOpenMenu(null);
   }
 }}
@@ -447,7 +454,7 @@ const selectedKey = location.pathname.split("/")[1] || "dashboard";
       )}
 
       <AnimatePresence initial={false}>
-        {(isMobile ? !collapsed : true) && (
+        {(!isMobile || !collapsed) && (
           <div ref={containerRef} style={{ height: "100%" }}>
             {isMobile && !collapsed && (
               <motion.div

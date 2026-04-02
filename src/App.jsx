@@ -4,6 +4,7 @@ import TicketsPage from "./pages/TicketsPage";
 import TicketDetails from "./pages/TicketDetails";
 import NotificationPage from "./pages/NotificationPage";
 import Dashboard from "./pages/Dashboard";
+import DeveloperDashboard from "./pages/DeveloperDashboard";
 import Settings from "./pages/Settings";
 //import Products from "./pages/Products";
 
@@ -23,6 +24,7 @@ function App() {
 
           {/* Dashboard */}
           <Route index element={<Dashboard />} />
+          <Route path="developer" element={<DeveloperDashboard />} />
           <Route path="support-ticket" element={<SupportTicket />} />
 
           {/* Tickets */}
